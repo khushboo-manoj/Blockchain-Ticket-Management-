@@ -1,0 +1,105 @@
+Geth Based Ethereum Private Blockchain Netwrok Environment Setup
+
+Geth installation:(Step 1)
+
+	1. sudo add-apt-repository -y ppa:ethereum/ethereum
+	2. sudo apt-get update
+	3. sudo apt-get install ethereum
+
+
+Create Accounts:(Step 2)
+
+    1. mkdir node1/node2 
+    2. cd node1/node2 
+    3. geth --datadir ./data account new
+
+Configure and Initialise the Genesis Block on Nodes: (Step 3)
+	
+	geth --datadir ./data init ../airline_ticket.json
+
+
+Create and Start the Boot Node: (Step 4) 
+
+	1. mkdir bnode
+    2. cd bnode
+    3. bootnode -genkey boot.key 
+    4. bootnode -nodekey ./boot.key -verbosity 7 -addr 172.31.84.19:30301
+
+	Boot Node:
+			
+		enode://de6124e71a3b81d7f064f29e36f883bd18cb87135310e7d3badf0a0fdf95a76b0c24e88890dfbf3ff4ce9af04af224683945e78b5845174faac4d29029c56c42@172.31.84.19:0?discport=30301
+
+
+Create password.txt files on node1 and node2 folders: (Step 5)
+
+
+EC2 Instance 1
+
+	ssh -i "blockchain.pem" ubuntu@ec2-3-88-192-63.compute-1.amazonaws.com
+
+	private ip - 172.31.84.19
+	
+	public ip  - 3.88.192.63
+
+
+	Node 1:
+		Airline Account 1:
+			
+			Public address of the key:   0x19e4dB71c2632f92e386B52492EE79B146Bf386e
+			Path of the secret key file: data/keystore/UTC--2023-01-05T02-34-52.919952493Z--19e4db71c2632f92e386b52492ee79b146bf386e
+
+		Command to run the Airline account 1 as a miner: (Step 6)
+			geth --networkid 14444 --datadir ./data --bootnodes enode://de6124e71a3b81d7f064f29e36f883bd18cb87135310e7d3badf0a0fdf95a76b0c24e88890dfbf3ff4ce9af04af224683945e78b5845174faac4d29029c56c42@172.31.84.19:0?discport=30301 --port 30308 --ipcdisable --syncmode 'full' --http --allow-insecure-unlock --http.corsdomain="http://remix.ethereum.org" --http.addr 0.0.0.0 --http.port 8548 --http.vhosts "*" --http.api web3,eth,debug,personal,net --unlock '0x19e4dB71c2632f92e386B52492EE79B146Bf386e' --password password.txt --mine console
+
+	Node 2:
+		Customer Account 1:
+			
+			Public address of the key:   0x2717E7a13Ef1cf221D2346512C8aAC9064A9fE19
+			Path of the secret key file: data/keystore/UTC--2023-01-05T02-37-13.332371852Z--2717e7a13ef1cf221d2346512c8aac9064a9fe19
+			
+
+		Customer Account 2:
+
+			Public address of the key:   0x92DaADacfeab7A1a75beECfe49D3AA535B96E428
+			Path of the secret key file: data/keystore/UTC--2023-01-05T02-40-33.433022496Z--92daadacfeab7a1a75beecfe49d3aa535b96e428
+
+
+EC2 Instance 2
+
+	ssh -i "blockchain.pem" ubuntu@ec2-44-211-224-200.compute-1.amazonaws.com
+
+	private ip - 172.31.85.220
+	
+	public ip  - 44.211.224.200
+
+	
+	Node 1:
+		
+		Airline Account 2:
+			
+			Public address of the key:   0xAC5a4697b03584faB0E73C9Aa8eD8Ba84a457cB2
+			Path of the secret key file: data/keystore/UTC--2023-01-05T02-43-09.762085814Z--ac5a4697b03584fab0e73c9aa8ed8ba84a457cb2
+
+		Command to run the Airline account 2 as a miner:(Step 7)
+			geth --networkid 14444 --datadir ./data --bootnodes enode://de6124e71a3b81d7f064f29e36f883bd18cb87135310e7d3badf0a0fdf95a76b0c24e88890dfbf3ff4ce9af04af224683945e78b5845174faac4d29029c56c42@172.31.84.19:0?discport=30301 --port 30309 --ipcdisable --syncmode 'full' --http --allow-insecure-unlock --http.corsdomain="http://remix.ethereum.org" --http.addr 0.0.0.0 --http.port 8549 --http.vhosts "*" --http.api web3,eth,debug,personal,net --unlock '0xAC5a4697b03584faB0E73C9Aa8eD8Ba84a457cB2' --password password.txt --mine console
+
+	
+	Node 2:
+		Customer Account 3:
+
+			Public address of the key:   0x8B5F4aF48065680c75471484B5d40791808bd9A9
+			Path of the secret key file: data/keystore/UTC--2023-01-05T02-44-51.524727805Z--8b5f4af48065680c75471484b5d40791808bd9a9
+
+		Customer Account 4:
+
+			Public address of the key:   0x2EdD8Fe8ff2b5987ac96574eA8ea77B9F1B1480B
+			Path of the secret key file: data/keystore/UTC--2023-01-05T02-46-13.577629941Z--2edd8fe8ff2b5987ac96574ea8ea77b9f1b1480b
+
+	
+		Escrow Account:
+
+			Public address of the key:   0x5aC7d0fB030533cD2372dDdf304f57dA4A45a5Fd
+			Path of the secret key file: data/keystore/UTC--2023-01-05T02-47-52.150206236Z--5ac7d0fb030533cd2372dddf304f57da4a45a5fd
+
+
+

@@ -1,0 +1,86 @@
+Hyperledger Besu Based Ethereum Private Blockchain Netwrok Environment Setup
+
+Prerequisites:
+    1. Installing Java 
+        1. sudo apt install default-jre
+        2. sudo apt install default-jdk
+        3. sudo update-alternatives --config java
+            /usr/lib/jvm/java-11-openjdk-amd64/bin/java
+        4. sudo vim /etc/environment
+            Set the java path --> JAVA_HOME="/usr/lib/jvm/java-11-openjdk-amd64"
+        5. source /etc/environment
+    
+    2. Installing Hyperledger Besu    
+        Download the besu in this link --> 
+            wget https://hyperledger.jfrog.io/hyperledger/besu-binaries/besu/22.10.2/besu-22.10.2.zip
+
+Setup:
+
+    EC2 Instance 1:
+
+        ssh -i "blockchain.pem" ubuntu@ec2-44-212-6-29.compute-1.amazonaws.com
+
+        Public IP - 44.212.6.29
+        Private IP - 172.31.90.203
+
+
+    EC2 Instance 2:
+
+        ssh -i "blockchain.pem" ubuntu@ec2-54-157-231-204.compute-1.amazonaws.com
+
+        Public IP - 54.157.231.204
+        Private IP - 172.31.93.160
+
+
+    1. Create directories
+
+        Clique-Network/
+        ├── Node-1
+        │   ├── data
+        ├── Node-2
+        │   ├── data
+        └── Node-3
+            ├── data
+
+    2. Get the address for Node-1
+
+        Node 1: besu --data-path=data public-key export-address --to=data/node1Address  
+
+            Address: 0x0b43f5b05e317b97171edac6647fca2b184587c
+    
+            Private Key: 0xfac867cc933ac630ec9b61ee37d26462d087b74ce34464eb5a3b8a764ffd3ae4
+
+        Node 2: besu --data-path=data public-key export-address --to=data/node2Address
+
+            Private Key: 0x48133a0bcfa5bd98660586c8eaddbd66cfe03c49b0cf7fda26bd08c3a0678500
+
+            Address: 0xeca81e26a1dc669e20b011bed23eb3eb0fab9b71
+
+        Node 3: besu --data-path=data public-key export-address --to=data/node3Address
+
+            Private Key: 0x42fef2bf018ada7cd8e835efab9751e2200b6c8895d8fa78552e785a70b949b1
+
+            Address: 0x172719ce71da07baaba188bfc4ad123489880b8f
+
+    3. Create the genesis file cliqueGenesis.json and save it in the Clique-Network directory
+
+    4. Start the first node as the bootnode
+    
+        Node-1
+    
+            ./bin/besu --data-path=Clique-Network/Node-1/data --genesis-file=Clique-Network/cliqueGenesis.json --network-id 123 --rpc-http-enabled --rpc-http-api=ETH,NET,CLIQUE --host-allowlist="*" --rpc-http-cors-origins="all"
+
+            ENode URL:
+                enode://af9bfb61ea29516a17c1e14dcbfdbaf349c122803814cf837a771aed5fe6cd16496310bc0ca600e388aebd1c696d95722e5356f8db92e38a55639fc8dc6b9749@172.31.85.220:30303
+
+    5. Start Node-2
+
+        ./bin/besu --data-path=Clique-Network/Node-2/data --genesis-file=Clique-Network/cliqueGenesis.json --bootnodes=enode://af9bfb61ea29516a17c1e14dcbfdbaf349c122803814cf837a771aed5fe6cd16496310bc0ca600e388aebd1c696d95722e5356f8db92e38a55639fc8dc6b9749@172.31.85.220:30303 --network-id 123 --p2p-port=30304 --rpc-http-enabled --rpc-http-api=ETH,NET,CLIQUE --host-allowlist="*" --rpc-http-cors-origins="all" --rpc-http-port=8546
+
+    6. Start Node-3
+
+        ./bin/besu --data-path=Clique-Network/Node-3/data --genesis-file=Clique-Network/cliqueGenesis.json --bootnodes=enode://af9bfb61ea29516a17c1e14dcbfdbaf349c122803814cf837a771aed5fe6cd16496310bc0ca600e388aebd1c696d95722e5356f8db92e38a55639fc8dc6b9749@172.31.85.220:30303 --network-id 123 --p2p-port=30305 --rpc-http-enabled --rpc-http-api=ETH,NET,CLIQUE --host-allowlist="*" --rpc-http-cors-origins="all" --rpc-http-port=8547
+
+    7. Confirm the private network is working
+
+        curl -X POST --data '{"jsonrpc":"2.0","method":"net_peerCount","params":[],"id":1}' localhost:8545
